@@ -17,4 +17,34 @@ stages:
       - artifacts/data_ingestion/dataset
     outs:
       - artifacts/data_preprocessing/train_preprocessed.csv
+      - artifacts/data_preprocessing/val_preprocessed.csv
       - artifacts/data_preprocessing/test_preprocessed.csv
+
+  model_trainer:
+    cmd: python src/FraudDetectionAI/pipeline/stage_03_model_trainer.py
+    deps:
+      - src/FraudDetectionAI/pipeline/stage_03_model_trainer.py
+      - src/FraudDetectionAI/components/model_trainer.py
+      - config/config.yaml
+      - artifacts/data_preprocessing/train_preprocessed.csv
+      - artifacts/data_preprocessing/val_preprocessed.csv
+    params:
+      - LogisticRegression.penalty
+      - LogisticRegression.C
+      - LogisticRegression.class_weight
+      - LogisticRegression.max_iter
+      - LogisticRegression.solver
+    outs:
+      - artifacts/model_trainer/model.joblib
+
+  model_evaluation:
+    cmd: python src/FraudDetectionAI/pipeline/stage_04_model_evaluation.py
+    deps:
+      - src/FraudDetectionAI/pipeline/stage_04_model_evaluation.py
+      - src/FraudDetectionAI/components/model_evaluation.py
+      - config/config.yaml
+      - artifacts/model_trainer/model.joblib
+      - artifacts/data_preprocessing/val_preprocessed.csv
+    metrics:
+      - artifacts/model_evaluation/metrics.json:
+          cache: false
