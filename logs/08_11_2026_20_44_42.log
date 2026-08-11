@@ -1,0 +1,10 @@
+[ 2026-08-11 20:44:46,310 ] 8 root - INFO - >>>>>> stage Data Ingestion stage started <<<<<<
+[ 2026-08-11 20:44:46,312 ] 29 root - INFO - yaml file: config\config.yaml loaded successfully
+[ 2026-08-11 20:44:46,314 ] 29 root - INFO - yaml file: params.yaml loaded successfully
+[ 2026-08-11 20:44:46,314 ] 47 root - INFO - created directory at: artifacts
+[ 2026-08-11 20:44:46,315 ] 47 root - INFO - created directory at: artifacts/data_ingestion
+[ 2026-08-11 20:44:46,315 ] 23 root - INFO - Downloading dataset from Google Drive...
+[ 2026-08-11 20:53:03,972 ] 31 root - INFO - Dataset downloaded successfully at artifacts\data_ingestion\dataset
+[ 2026-08-11 20:53:03,972 ] 11 root - INFO - >>>>>> stage Data Ingestion stage completed <<<<<<
+
+x==========x

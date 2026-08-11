@@ -1,0 +1,19 @@
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+python-box==6.0.2
+pyYAML
+tqdm
+ensure
+joblib
+types-PyYAML
+Flask
+dvc
+python-dotenv
+gdown
+
+
+
+-e .
