@@ -3,3 +3,12 @@ artifacts_root: artifacts
 data_ingestion:
   root_dir: artifacts/data_ingestion
   local_data_dir: artifacts/data_ingestion/dataset
+
+data_preprocessing:
+  root_dir: artifacts/data_preprocessing
+  train_data_path: artifacts/data_ingestion/dataset/train_transaction.csv
+  train_identity_path: artifacts/data_ingestion/dataset/train_identity.csv
+  test_data_path: artifacts/data_ingestion/dataset/test_transaction.csv
+  test_identity_path: artifacts/data_ingestion/dataset/test_identity.csv
+  preprocessed_train_path: artifacts/data_preprocessing/train_preprocessed.csv
+  preprocessed_test_path: artifacts/data_preprocessing/test_preprocessed.csv

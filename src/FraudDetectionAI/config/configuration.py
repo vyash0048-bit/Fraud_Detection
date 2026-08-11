@@ -2,7 +2,10 @@ import os
 from pathlib import Path
 from FraudDetectionAI.constants import *
 from FraudDetectionAI.utils.common import read_yaml, create_directories
-from FraudDetectionAI.entity.config_entity import DataIngestionConfig
+from FraudDetectionAI.entity.config_entity import (
+    DataIngestionConfig,
+    DataPreprocessingConfig
+)
 
 class ConfigurationManager:
     def __init__(
@@ -26,3 +29,20 @@ class ConfigurationManager:
         )
 
         return data_ingestion_config
+
+    def get_data_preprocessing_config(self) -> DataPreprocessingConfig:
+        config = self.config.data_preprocessing
+
+        create_directories([config.root_dir])
+
+        data_preprocessing_config = DataPreprocessingConfig(
+            root_dir=Path(config.root_dir),
+            train_data_path=Path(config.train_data_path),
+            train_identity_path=Path(config.train_identity_path),
+            test_data_path=Path(config.test_data_path),
+            test_identity_path=Path(config.test_identity_path),
+            preprocessed_train_path=Path(config.preprocessed_train_path),
+            preprocessed_test_path=Path(config.preprocessed_test_path),
+        )
+
+        return data_preprocessing_config
