@@ -1,0 +1,23 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python src/FraudDetectionAI/pipeline/stage_01_data_ingestion.py
+    deps:
+    - path: config/config.yaml
+      hash: md5
+      md5: 931a29d77ddeb75b5c7d78dbb0c5a226
+      size: 131
+    - path: src/FraudDetectionAI/components/data_ingestion.py
+      hash: md5
+      md5: 4c406f0a0faa81d7f3ddb9adf56390d8
+      size: 1236
+    - path: src/FraudDetectionAI/pipeline/stage_01_data_ingestion.py
+      hash: md5
+      md5: 247dbf2fabb6bb62d37c403241c62413
+      size: 857
+    outs:
+    - path: artifacts/data_ingestion/dataset
+      hash: md5
+      md5: 26a595de8c32cce09174f0d91250f56b.dir
+      size: 1354953156
+      nfiles: 5
