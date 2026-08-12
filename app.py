@@ -131,8 +131,8 @@ def predict(request: PredictionRequest):
             else:
                 logger.warning(f"Feature '{key}' provided but not expected by the model. Ignoring.")
         
-        # Ensure correct datatypes if necessary, LightGBM usually handles float well
-        features_df = features_df.astype(float)
+        # Ensure correct datatypes; coerce unmapped strings to NaN so LightGBM can still score them
+        features_df = features_df.apply(pd.to_numeric, errors='coerce').astype(float)
         
         # Predict probability using calibrated model
         # predict_proba returns [[prob_0, prob_1]]
