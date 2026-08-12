@@ -107,11 +107,22 @@ def predict(request: PredictionRequest):
         raise HTTPException(status_code=503, detail="Model is not loaded.")
     
     try:
-        # Preprocessing: convert dict to a DataFrame with 1 row
-        features_df = pd.DataFrame([request.features])
+        # Get expected features from the model
+        expected_features = model.feature_names_in_
         
-        # Ensure all columns exist or are ordered correctly if needed by your model's preprocessor.
-        # Here we assume the input dictionary perfectly matches the model's expected features.
+        # Create a DataFrame with 1 row, filled with NaNs (which LightGBM handles natively)
+        features_df = pd.DataFrame(columns=expected_features)
+        features_df.loc[0] = np.nan
+        
+        # Update the dataframe with the provided features
+        for key, value in request.features.items():
+            if key in expected_features:
+                features_df.at[0, key] = value
+            else:
+                logger.warning(f"Feature '{key}' provided but not expected by the model. Ignoring.")
+        
+        # Ensure correct datatypes if necessary, LightGBM usually handles float well
+        features_df = features_df.astype(float)
         
         # Predict probability using calibrated model
         # predict_proba returns [[prob_0, prob_1]]
