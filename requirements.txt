@@ -13,7 +13,8 @@ Flask
 dvc
 python-dotenv
 gdown
-
+lightgbm
+shap
 
 
 -e .

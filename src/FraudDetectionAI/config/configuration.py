@@ -52,7 +52,7 @@ class ConfigurationManager:
 
     def get_model_trainer_config(self) -> ModelTrainerConfig:
         config = self.config.model_trainer
-        params = self.params.LogisticRegression
+        params = self.params.LightGBM
 
         create_directories([config.root_dir])
 
@@ -61,11 +61,14 @@ class ConfigurationManager:
             train_data_path=Path(config.train_data_path),
             val_data_path=Path(config.val_data_path),
             model_name=config.model_name,
-            penalty=params.penalty,
-            C=params.C,
-            class_weight=params.class_weight,
-            max_iter=params.max_iter,
-            solver=params.solver
+            n_estimators=params.n_estimators,
+            learning_rate=params.learning_rate,
+            num_leaves=params.num_leaves,
+            max_depth=params.max_depth,
+            min_child_samples=params.min_child_samples,
+            subsample=params.subsample,
+            colsample_bytree=params.colsample_bytree,
+            n_iter_search=params.n_iter_search
         )
 
         return model_trainer_config

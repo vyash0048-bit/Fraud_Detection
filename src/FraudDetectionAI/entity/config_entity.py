@@ -23,11 +23,14 @@ class ModelTrainerConfig:
     train_data_path: Path
     val_data_path: Path
     model_name: str
-    penalty: str
-    C: float
-    class_weight: str
-    max_iter: int
-    solver: str
+    n_estimators: int
+    learning_rate: list
+    num_leaves: list
+    max_depth: list
+    min_child_samples: list
+    subsample: list
+    colsample_bytree: list
+    n_iter_search: int
 
 @dataclass(frozen=True)
 class ModelEvaluationConfig:
