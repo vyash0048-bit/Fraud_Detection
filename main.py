@@ -7,6 +7,7 @@ from FraudDetectionAI.pipeline.stage_04_model_evaluation import ModelEvaluationP
 STAGE_NAME = "Data Ingestion stage"
 
 def main():
+    global STAGE_NAME
     try:
         logging.info(f">>>>>> stage {STAGE_NAME} started <<<<<<")
         data_ingestion = DataIngestionTrainingPipeline()
