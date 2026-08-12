@@ -86,3 +86,13 @@ class ModelTrainer:
         model_path = os.path.join(self.config.root_dir, self.config.model_name)
         joblib.dump(best_model, model_path)
         logging.info(f"LightGBM Model saved to {model_path}")
+        
+        logging.info("Calibrating model probabilities using Isotonic Regression...")
+        from sklearn.calibration import CalibratedClassifierCV
+        from sklearn.frozen import FrozenEstimator
+        calibrated_model = CalibratedClassifierCV(estimator=FrozenEstimator(best_model), method='isotonic')
+        calibrated_model.fit(X_val, y_val)
+        
+        calibrated_model_path = os.path.join(self.config.root_dir, self.config.calibrated_model_name)
+        joblib.dump(calibrated_model, calibrated_model_path)
+        logging.info(f"Calibrated LightGBM Model saved to {calibrated_model_path}")

@@ -7,7 +7,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import (roc_auc_score, average_precision_score, 
                              precision_score, recall_score, f1_score, 
-                             confusion_matrix, roc_curve, precision_recall_curve)
+                             confusion_matrix, roc_curve, precision_recall_curve,
+                             brier_score_loss)
+from sklearn.calibration import calibration_curve
+import shap
 from FraudDetectionAI.logger import logging
 from FraudDetectionAI.entity.config_entity import ModelEvaluationConfig
 
@@ -86,10 +89,42 @@ class ModelEvaluation:
         plt.savefig(os.path.join(self.plots_dir, "confusion_matrix.png"))
         plt.close()
 
+    def plot_calibration_curve(self, y_test, prob_raw, prob_cal):
+        fraction_of_positives_raw, mean_predicted_value_raw = calibration_curve(y_test, prob_raw, n_bins=10)
+        fraction_of_positives_cal, mean_predicted_value_cal = calibration_curve(y_test, prob_cal, n_bins=10)
+        
+        brier_raw = brier_score_loss(y_test, prob_raw)
+        brier_cal = brier_score_loss(y_test, prob_cal)
+        
+        plt.figure(figsize=(8, 8))
+        plt.plot([0, 1], [0, 1], "k:", label="Perfectly calibrated")
+        plt.plot(mean_predicted_value_raw, fraction_of_positives_raw, "s-", label=f'Raw Model (Brier: {brier_raw:.3f})')
+        plt.plot(mean_predicted_value_cal, fraction_of_positives_cal, "o-", label=f'Calibrated Model (Brier: {brier_cal:.3f})')
+        plt.ylabel("Fraction of positives")
+        plt.xlabel("Mean predicted value")
+        plt.title("Calibration Curve (Reliability Diagram)")
+        plt.legend(loc="lower right")
+        plt.tight_layout()
+        plt.savefig(os.path.join(self.plots_dir, "calibration_curve.png"))
+        plt.close()
+        
+        return brier_raw, brier_cal
+
+    def generate_shap_summary(self, model, X_sample):
+        explainer = shap.TreeExplainer(model)
+        shap_values = explainer.shap_values(X_sample)
+        plt.figure()
+        shap.summary_plot(shap_values, X_sample, show=False)
+        plt.title("SHAP Summary Plot")
+        plt.tight_layout()
+        plt.savefig(os.path.join(self.plots_dir, "shap_summary.png"))
+        plt.close()
+
     def initiate_model_evaluation(self):
         logging.info("Loading preprocessed test/val data and model")
         test = pd.read_csv(self.config.test_data_path)
-        model = joblib.load(self.config.model_path)
+        raw_model = joblib.load(self.config.model_path)
+        calibrated_model = joblib.load(self.config.calibrated_model_path)
         
         target = 'isFraud'
         
@@ -97,7 +132,8 @@ class ModelEvaluation:
         y_test = test[target]
         
         logging.info("Predicting probabilities...")
-        y_prob = model.predict_proba(X_test)[:, 1]
+        y_prob_raw = raw_model.predict_proba(X_test)[:, 1]
+        y_prob = calibrated_model.predict_proba(X_test)[:, 1]
         
         # 1. Base Metrics
         roc_auc = roc_auc_score(y_test, y_prob)
@@ -149,10 +185,15 @@ class ModelEvaluation:
                    [int(best_f1_row['fn']), int(best_f1_row['tp'])]]
         self.plot_confusion_matrix(best_cm, best_thresh)
         
+        brier_raw, brier_cal = self.plot_calibration_curve(y_test, y_prob_raw, y_prob)
+        self.generate_shap_summary(raw_model, X_test.sample(n=min(5000, len(X_test)), random_state=42))
+        
         metrics = {
             'roc_auc': float(roc_auc),
             'gini': float(gini),
             'pr_auc': float(pr_auc),
+            'brier_score_raw': float(brier_raw),
+            'brier_score_calibrated': float(brier_cal),
             'precision_at_5pct': float(p_at_5),
             'recall_at_5pct': float(r_at_5),
             'best_f1_threshold': float(best_thresh),

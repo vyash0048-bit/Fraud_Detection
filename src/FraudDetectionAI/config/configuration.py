@@ -61,6 +61,7 @@ class ConfigurationManager:
             train_data_path=Path(config.train_data_path),
             val_data_path=Path(config.val_data_path),
             model_name=config.model_name,
+            calibrated_model_name=config.calibrated_model_name,
             n_estimators=params.n_estimators,
             learning_rate=params.learning_rate,
             num_leaves=params.num_leaves,
@@ -82,6 +83,7 @@ class ConfigurationManager:
             root_dir=Path(config.root_dir),
             test_data_path=Path(config.test_data_path),
             model_path=Path(config.model_path),
+            calibrated_model_path=Path(config.calibrated_model_path),
             metric_file_name=Path(config.metric_file_name)
         )
 

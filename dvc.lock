@@ -67,12 +67,12 @@ stages:
       size: 218757864
     - path: config/config.yaml
       hash: md5
-      md5: 1cb3607f2c6afd6f592f998bfb4e63e2
-      size: 1173
+      md5: 1e9ce6d9784800140af6a1bf5071afc7
+      size: 1295
     - path: src/FraudDetectionAI/components/model_trainer.py
       hash: md5
-      md5: 4f0dd48cd1e503e90e2866f18646a137
-      size: 3408
+      md5: dc3f126985678b01744cf072cabeaf0d
+      size: 4023
     - path: src/FraudDetectionAI/pipeline/stage_03_model_trainer.py
       hash: md5
       md5: 1c72f3a8704cf303ab3e2f0dba331be4
@@ -104,6 +104,10 @@ stages:
         - 0.8
         - 1.0
     outs:
+    - path: artifacts/model_trainer/calibrated_model.joblib
+      hash: md5
+      md5: a1433f7b15c072186d43b7b801b7e7dc
+      size: 2661954
     - path: artifacts/model_trainer/model.joblib
       hash: md5
       md5: ea67c4ca8b10439fd5108842928fa401
@@ -115,18 +119,22 @@ stages:
       hash: md5
       md5: 3a598ef1f40a4b8588bd30bf8e56a5ca
       size: 218757864
+    - path: artifacts/model_trainer/calibrated_model.joblib
+      hash: md5
+      md5: a1433f7b15c072186d43b7b801b7e7dc
+      size: 2661954
     - path: artifacts/model_trainer/model.joblib
       hash: md5
       md5: ea67c4ca8b10439fd5108842928fa401
       size: 2626804
     - path: config/config.yaml
       hash: md5
-      md5: 1cb3607f2c6afd6f592f998bfb4e63e2
-      size: 1173
+      md5: 1e9ce6d9784800140af6a1bf5071afc7
+      size: 1295
     - path: src/FraudDetectionAI/components/model_evaluation.py
       hash: md5
-      md5: e3df0ffe050cbe423cd2b1b7afee2ea1
-      size: 7119
+      md5: e2a9cfbe4bc9c30083e1f729522e5674
+      size: 9193
     - path: src/FraudDetectionAI/pipeline/stage_04_model_evaluation.py
       hash: md5
       md5: ce675b0c7ace329528e8aca748c79c75
@@ -134,14 +142,14 @@ stages:
     outs:
     - path: artifacts/model_evaluation/metrics.json
       hash: md5
-      md5: 1749557f332ef758a53c099b8e05588f
-      size: 515
+      md5: df44dbbe61867f4d2d7dbb12ff6031a2
+      size: 612
     - path: artifacts/model_evaluation/plots
       hash: md5
-      md5: 232511005237989402e77c7575819ffa.dir
-      size: 133647
-      nfiles: 3
+      md5: 7e2ed385c7b4bc2729c953fc4bb6c40b.dir
+      size: 294309
+      nfiles: 5
     - path: artifacts/model_evaluation/threshold_optimization.csv
       hash: md5
-      md5: 6b742e9d0f0dbfe99fbcc9ffcda20066
-      size: 13219
+      md5: 0da6145bc1db5564e94e56a021d0619b
+      size: 13139

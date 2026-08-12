@@ -19,10 +19,12 @@ model_trainer:
   train_data_path: artifacts/data_preprocessing/train_preprocessed.csv
   val_data_path: artifacts/data_preprocessing/val_preprocessed.csv
   model_name: model.joblib
+  calibrated_model_name: calibrated_model.joblib
 
 model_evaluation:
   root_dir: artifacts/model_evaluation
   test_data_path: artifacts/data_preprocessing/val_preprocessed.csv
   model_path: artifacts/model_trainer/model.joblib
+  calibrated_model_path: artifacts/model_trainer/calibrated_model.joblib
   metric_file_name: artifacts/model_evaluation/metrics.json
 

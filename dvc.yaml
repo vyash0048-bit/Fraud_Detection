@@ -41,6 +41,7 @@ stages:
     - LightGBM.n_iter_search
     outs:
     - artifacts/model_trainer/model.joblib
+    - artifacts/model_trainer/calibrated_model.joblib
 
   model_evaluation:
     cmd: python src/FraudDetectionAI/pipeline/stage_04_model_evaluation.py
@@ -49,6 +50,7 @@ stages:
     - src/FraudDetectionAI/components/model_evaluation.py
     - config/config.yaml
     - artifacts/model_trainer/model.joblib
+    - artifacts/model_trainer/calibrated_model.joblib
     - artifacts/data_preprocessing/val_preprocessed.csv
     metrics:
     - artifacts/model_evaluation/metrics.json:

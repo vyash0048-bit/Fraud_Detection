@@ -23,6 +23,7 @@ class ModelTrainerConfig:
     train_data_path: Path
     val_data_path: Path
     model_name: str
+    calibrated_model_name: str
     n_estimators: int
     learning_rate: list
     num_leaves: list
@@ -37,4 +38,5 @@ class ModelEvaluationConfig:
     root_dir: Path
     test_data_path: Path
     model_path: Path
+    calibrated_model_path: Path
     metric_file_name: Path
