@@ -3,40 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fraud Detection Sentinel</title>
+    <title>Sentinel | Fraud Detection</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <header class="app-header">
+    <div class="noise-overlay"></div>
+    
+    <header class="app-header fade-in">
         <div class="logo">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            <h1>Sentinel API Dashboard</h1>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <h1>Sentinel</h1>
         </div>
         <div class="status-indicator">
-            <span class="dot live"></span> System Operational
+            <span class="dot live"></span> System Live
         </div>
     </header>
 
-    <main class="dashboard-grid">
+    <main class="dashboard-grid fade-in-up">
         <!-- Input Section -->
         <section class="panel input-panel">
             <div class="panel-header">
                 <h2>Transaction Input</h2>
-                <p>Simulate a transaction to evaluate fraud risk.</p>
+                <p>Inject payload for real-time inference.</p>
             </div>
             
             <form id="scoring-form">
                 <div class="form-group">
-                    <label for="tx_id">Transaction ID (Optional)</label>
-                    <input type="text" id="tx_id" placeholder="txn_auto_generated">
+                    <label for="tx_id">Transaction ID</label>
+                    <input type="text" id="tx_id" placeholder="Auto-generated if blank">
                 </div>
                 
                 <div class="form-group">
-                    <label for="features_json">Raw Feature Payload (JSON)</label>
-                    <textarea id="features_json" rows="12">
+                    <label for="features_json">Feature Payload (JSON)</label>
+                    <textarea id="features_json" rows="10" spellcheck="false">
 {
   "TransactionAmt": 150.50,
   "card1": 1000,
@@ -45,12 +47,14 @@
   "is_guest": 0,
   "device_type": 2
 }</textarea>
-                    <span class="helper-text">Ensure feature names match the model training schema exactly.</span>
                 </div>
                 
                 <button type="submit" class="primary-btn" id="submit-btn">
-                    <span class="btn-text">Run Risk Analysis</span>
-                    <span class="loader" style="display: none;"></span>
+                    <span class="btn-text">Analyze Risk</span>
+                    <div class="scanning-loader" style="display: none;">
+                        <div class="scanner-line"></div>
+                        <span>Scanning...</span>
+                    </div>
                 </button>
             </form>
         </section>
@@ -58,38 +62,50 @@
         <!-- Results Section -->
         <section class="panel result-panel">
             <div class="panel-header">
-                <h2>Evaluation Result</h2>
-                <p>Real-time machine learning inference.</p>
+                <h2>Inference Result</h2>
+                <p>Machine learning evaluation metrics.</p>
             </div>
             
             <div class="results-container empty" id="results-container">
                 <div class="empty-state">
-                    <p>Awaiting transaction payload...</p>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <p>Awaiting transaction data</p>
                 </div>
                 
                 <div class="scoring-card" style="display: none;">
                     <div class="score-header">
-                        <h3>Risk Score</h3>
-                        <div class="badge" id="decision-badge">PENDING</div>
+                        <span class="badge" id="decision-badge">PENDING</span>
+                        <span class="tx-id-display" id="result-tx-id">--</span>
                     </div>
                     
-                    <div class="score-display">
-                        <div class="score-number" id="risk-score">--</div>
-                        <div class="score-label">out of 100</div>
-                    </div>
-                    
-                    <div class="metrics-grid">
-                        <div class="metric">
-                            <span class="metric-label">Fraud Probability</span>
-                            <span class="metric-value" id="fraud-prob">--%</span>
+                    <div class="gauge-container">
+                        <svg class="circular-chart" viewBox="0 0 36 36">
+                            <path class="circle-bg"
+                                d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                            <path class="circle" id="score-circle"
+                                stroke-dasharray="0, 100"
+                                d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                        </svg>
+                        <div class="gauge-content">
+                            <div class="score-number" id="risk-score">0</div>
+                            <div class="score-label">Risk Score</div>
                         </div>
-                        <div class="metric">
-                            <span class="metric-label">Risk Level</span>
+                    </div>
+                    
+                    <div class="metrics-list">
+                        <div class="metric-row">
+                            <span class="metric-label">Probability</span>
+                            <span class="metric-value mono" id="fraud-prob">0.00%</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Tier</span>
                             <span class="metric-value" id="risk-level">--</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-label">Transaction ID</span>
-                            <span class="metric-value" id="result-tx-id" style="font-family: monospace; font-size: 0.85rem;">--</span>
                         </div>
                     </div>
                 </div>

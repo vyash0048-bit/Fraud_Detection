@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('scoring-form');
     const submitBtn = document.getElementById('submit-btn');
     const btnText = submitBtn.querySelector('.btn-text');
-    const loader = submitBtn.querySelector('.loader');
+    const loader = submitBtn.querySelector('.scanning-loader');
     
     const resultsContainer = document.getElementById('results-container');
     const emptyState = resultsContainer.querySelector('.empty-state');
@@ -10,10 +10,25 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Result elements
     const riskScoreEl = document.getElementById('risk-score');
+    const scoreCircle = document.getElementById('score-circle');
     const fraudProbEl = document.getElementById('fraud-prob');
     const riskLevelEl = document.getElementById('risk-level');
     const txIdEl = document.getElementById('result-tx-id');
     const decisionBadge = document.getElementById('decision-badge');
+
+    // Count Up Animation
+    function animateValue(obj, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            obj.innerHTML = Math.floor(progress * (end - start) + start);
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -21,13 +36,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // UI Loading State
         submitBtn.disabled = true;
         btnText.style.display = 'none';
-        loader.style.display = 'block';
+        loader.style.display = 'flex';
         
         try {
             const txIdInput = document.getElementById('tx_id').value.trim();
             const jsonInput = document.getElementById('features_json').value;
             
-            // Parse JSON
             let features;
             try {
                 features = JSON.parse(jsonInput);
@@ -36,19 +50,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw err;
             }
             
-            const payload = {
-                features: features
-            };
-            if (txIdInput) {
-                payload.transaction_id = txIdInput;
-            }
+            const payload = { features: features };
+            if (txIdInput) payload.transaction_id = txIdInput;
             
-            // API Call to Flask Proxy
+            // Add an artificial delay for the "scanning" aesthetic
+            await new Promise(r => setTimeout(r, 600));
+            
             const response = await fetch('/score', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
             
@@ -59,18 +69,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            // Update UI
+            // Show Results
             resultsContainer.classList.remove('empty');
             emptyState.style.display = 'none';
-            scoringCard.style.display = 'block';
+            scoringCard.style.display = 'flex';
             
-            // Populate Data
-            riskScoreEl.textContent = result.risk_score;
+            // Score Animation
+            const targetScore = result.risk_score;
+            animateValue(riskScoreEl, 0, targetScore, 1000);
+            
+            // SVG Gauge Animation
+            // dasharray format: "dash, gap". For a circle of r=15.9155, circumference is 100.
+            scoreCircle.setAttribute('stroke-dasharray', `${targetScore}, 100`);
+            
+            let strokeColor = '#10b981'; // Green
+            if (result.decision === 'REVIEW') strokeColor = '#f59e0b'; // Yellow
+            if (result.decision === 'DECLINE') strokeColor = '#ef4444'; // Red
+            scoreCircle.style.stroke = strokeColor;
+            
+            // Update Text
             fraudProbEl.textContent = (result.fraud_probability * 100).toFixed(2) + '%';
             riskLevelEl.textContent = result.risk_level.replace('_', ' ');
-            txIdEl.textContent = result.transaction_id.substring(0, 8) + '...';
+            txIdEl.textContent = result.transaction_id.length > 15 ? 
+                result.transaction_id.substring(0, 15) + '...' : result.transaction_id;
             
-            // Update Badge Color based on decision
+            // Badge
             decisionBadge.textContent = result.decision;
             decisionBadge.className = 'badge'; // reset
             if (result.decision === 'APPROVE') decisionBadge.classList.add('approve');
