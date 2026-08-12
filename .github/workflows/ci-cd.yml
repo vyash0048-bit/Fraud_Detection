@@ -61,3 +61,32 @@ jobs:
   #         context: .
   #         push: true
   #         tags: yourusername/fraud-detection-api:latest
+
+
+  deploy-to-ec2:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Clone repo if it doesn't exist, else pull latest
+            if [ ! -d "Fraud_Detection" ]; then
+              git clone https://github.com/vyash0048-bit/Fraud_Detection.git
+              cd Fraud_Detection
+            else
+              cd Fraud_Detection
+              git pull origin master
+            fi
+            
+            # Rebuild and restart the Docker container
+            docker stop fraud-api || true
+            docker rm fraud-api || true
+            docker build -t fraud-detection-api:latest .
+            docker run -d --name fraud-api -p 8000:8000 fraud-detection-api:latest
