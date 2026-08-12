@@ -17,6 +17,22 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
             <h1>Sentinel</h1>
         </div>
+        
+        <div class="header-metrics" id="header-metrics" style="opacity: 0;">
+            <div class="header-metric">
+                <span class="hm-label">ROC-AUC</span>
+                <span class="hm-value mono" id="kpi-auc">--</span>
+            </div>
+            <div class="header-metric">
+                <span class="hm-label">Brier Score</span>
+                <span class="hm-value mono" id="kpi-brier">--</span>
+            </div>
+            <div class="header-metric">
+                <span class="hm-label">Precision</span>
+                <span class="hm-value mono" id="kpi-precision">--</span>
+            </div>
+        </div>
+
         <div class="status-indicator">
             <span class="dot live"></span> System Live
         </div>
@@ -109,6 +125,31 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </section>
+        
+        <!-- Log Section -->
+        <section class="panel log-panel" style="grid-column: 1 / -1; margin-top: 2rem;">
+            <div class="panel-header" style="margin-bottom: 1.5rem;">
+                <h2>Transaction History</h2>
+                <p>Recent API inference calls.</p>
+            </div>
+            
+            <div class="table-container">
+                <table class="log-table">
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Amount</th>
+                            <th>Probability</th>
+                            <th>Risk Score</th>
+                            <th>Decision</th>
+                        </tr>
+                    </thead>
+                    <tbody id="log-body">
+                        <!-- Rows injected by JS -->
+                    </tbody>
+                </table>
             </div>
         </section>
     </main>

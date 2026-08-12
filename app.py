@@ -98,6 +98,16 @@ def health_check():
         raise HTTPException(status_code=503, detail="Model is not loaded.")
     return {"status": "ok", "message": "Fraud Detection API is running and model is loaded."}
 
+@app.get("/metrics", tags=["Metrics"])
+def get_metrics():
+    """Returns the model evaluation metrics."""
+    import json
+    metrics_path = os.path.join("artifacts", "model_evaluation", "metrics.json")
+    if os.path.exists(metrics_path):
+        with open(metrics_path, "r") as f:
+            return json.load(f)
+    raise HTTPException(status_code=404, detail="Metrics not found.")
+
 @app.post("/predict", response_model=PredictionResponse, tags=["Prediction"])
 def predict(request: PredictionRequest):
     """

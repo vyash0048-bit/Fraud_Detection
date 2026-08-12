@@ -16,6 +16,57 @@ document.addEventListener('DOMContentLoaded', () => {
     const txIdEl = document.getElementById('result-tx-id');
     const decisionBadge = document.getElementById('decision-badge');
 
+    // KPI Elements
+    const kpiMetrics = document.getElementById('header-metrics');
+    const kpiAuc = document.getElementById('kpi-auc');
+    const kpiBrier = document.getElementById('kpi-brier');
+    const kpiPrecision = document.getElementById('kpi-precision');
+
+    // Log Element
+    const logBody = document.getElementById('log-body');
+    const txHistory = [];
+
+    // Load Metrics on start
+    async function loadMetrics() {
+        try {
+            const res = await fetch('/metrics');
+            if (res.ok) {
+                const data = await res.json();
+                if (!data.error) {
+                    kpiAuc.textContent = data.roc_auc.toFixed(3);
+                    kpiBrier.textContent = data.brier_score_calibrated.toFixed(3);
+                    kpiPrecision.textContent = data.precision_at_best.toFixed(3);
+                    kpiMetrics.style.opacity = 1;
+                }
+            }
+        } catch (e) {
+            console.warn("Metrics not available yet.");
+        }
+    }
+    loadMetrics();
+
+    function updateLogTable(result, amount) {
+        txHistory.unshift({ ...result, amount });
+        if (txHistory.length > 5) txHistory.pop(); // keep last 5
+        
+        logBody.innerHTML = txHistory.map(tx => {
+            let badgeClass = 'pending';
+            if (tx.decision === 'APPROVE') badgeClass = 'approve';
+            if (tx.decision === 'REVIEW') badgeClass = 'review';
+            if (tx.decision === 'DECLINE') badgeClass = 'decline';
+            
+            return `
+                <tr>
+                    <td class="mono">${tx.transaction_id.substring(0,8)}...</td>
+                    <td>$${amount ? amount.toFixed(2) : '0.00'}</td>
+                    <td class="mono">${(tx.fraud_probability * 100).toFixed(2)}%</td>
+                    <td class="mono">${tx.risk_score}</td>
+                    <td><span class="badge ${badgeClass}">${tx.decision}</span></td>
+                </tr>
+            `;
+        }).join('');
+    }
+
     // Count Up Animation
     function animateValue(obj, start, end, duration) {
         let startTimestamp = null;
@@ -33,7 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        // UI Loading State
         submitBtn.disabled = true;
         btnText.style.display = 'none';
         loader.style.display = 'flex';
@@ -53,8 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const payload = { features: features };
             if (txIdInput) payload.transaction_id = txIdInput;
             
-            // Add an artificial delay for the "scanning" aesthetic
-            await new Promise(r => setTimeout(r, 600));
+            await new Promise(r => setTimeout(r, 600)); // aesthetic delay
             
             const response = await fetch('/score', {
                 method: 'POST',
@@ -79,7 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
             animateValue(riskScoreEl, 0, targetScore, 1000);
             
             // SVG Gauge Animation
-            // dasharray format: "dash, gap". For a circle of r=15.9155, circumference is 100.
             scoreCircle.setAttribute('stroke-dasharray', `${targetScore}, 100`);
             
             let strokeColor = '#10b981'; // Green
@@ -100,10 +148,12 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (result.decision === 'REVIEW') decisionBadge.classList.add('review');
             else if (result.decision === 'DECLINE') decisionBadge.classList.add('decline');
             
+            // Update Log
+            updateLogTable(result, features.TransactionAmt || features.transaction_amount || 0);
+            
         } catch (error) {
             console.error(error);
         } finally {
-            // Restore UI
             submitBtn.disabled = false;
             btnText.style.display = 'block';
             loader.style.display = 'none';
