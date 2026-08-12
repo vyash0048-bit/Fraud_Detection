@@ -3,10 +3,12 @@ import requests
 import uuid
 import logging
 
+import os
+
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
-FASTAPI_URL = "http://127.0.0.1:8000/predict"
+FASTAPI_URL = os.environ.get("FASTAPI_URL", "http://127.0.0.1:8000/predict")
 
 @app.route("/")
 def index():

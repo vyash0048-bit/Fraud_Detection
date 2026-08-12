@@ -85,8 +85,6 @@ jobs:
               git pull origin master
             fi
             
-            # Rebuild and restart the Docker container
-            docker stop fraud-api || true
-            docker rm fraud-api || true
-            docker build -t fraud-detection-api:latest .
-            docker run -d --name fraud-api -p 8000:8000 fraud-detection-api:latest
+            # Rebuild and restart the Docker containers using compose
+            docker-compose down || true
+            docker-compose up -d --build
