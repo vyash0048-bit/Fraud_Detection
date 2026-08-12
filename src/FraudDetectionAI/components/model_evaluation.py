@@ -122,14 +122,22 @@ class ModelEvaluation:
 
     def initiate_model_evaluation(self):
         logging.info("Loading preprocessed test/val data and model")
-        test = pd.read_csv(self.config.test_data_path)
+        test_data = pd.read_csv(self.config.test_data_path)
         raw_model = joblib.load(self.config.model_path)
         calibrated_model = joblib.load(self.config.calibrated_model_path)
         
         target = 'isFraud'
+        X_test = test_data.drop([target, 'TransactionID'], axis=1, errors='ignore')
+        y_test = test_data[target]
         
-        X_test = test.drop([target, 'TransactionID'], axis=1, errors='ignore')
-        y_test = test[target]
+        # Trim X_test if Feature Selection was used
+        features_file = os.path.join(os.path.dirname(self.config.calibrated_model_path), "selected_features.json")
+        if os.path.exists(features_file):
+            import json
+            with open(features_file, "r") as f:
+                top_features = json.load(f)
+            X_test = X_test[top_features]
+            logging.info(f"Filtered test data to {len(top_features)} selected features.")
         
         logging.info("Predicting probabilities...")
         y_prob_raw = raw_model.predict_proba(X_test)[:, 1]
@@ -211,5 +219,50 @@ class ModelEvaluation:
         # Save threshold data for analysts
         df_thresh.to_csv(os.path.join(self.config.root_dir, "threshold_optimization.csv"), index=False)
         logging.info("Threshold optimization framework data saved to CSV")
+        
+        # MLFlow Integration
+        import mlflow
+        import urllib.parse
+        
+        if hasattr(self.config, 'mlflow_uri') and self.config.mlflow_uri:
+            mlflow.set_registry_uri(self.config.mlflow_uri)
+            
+        tracking_url_type_store = urllib.parse.urlparse(mlflow.get_tracking_uri()).scheme
+        
+        # Flatten all params for logging
+        def flatten_dict(d, parent_key='', sep='.'):
+            items = []
+            for k, v in d.items():
+                new_key = f"{parent_key}{sep}{k}" if parent_key else k
+                if isinstance(v, dict):
+                    items.extend(flatten_dict(v, new_key, sep=sep).items())
+                else:
+                    items.append((new_key, v))
+            return dict(items)
+            
+        flat_params = {}
+        if hasattr(self.config, 'all_params'):
+            flat_params = flatten_dict(self.config.all_params)
+
+        with mlflow.start_run():
+            mlflow.log_params(flat_params)
+            
+            # Log metrics without the confusion matrix list
+            log_metrics = {k: v for k, v in metrics.items() if k != 'confusion_matrix'}
+            mlflow.log_metrics(log_metrics)
+            
+            # Log artifacts
+            mlflow.log_artifacts(self.plots_dir, artifact_path="plots")
+            mlflow.log_artifact(self.config.metric_file_name)
+            mlflow.log_artifact(os.path.join(self.config.root_dir, "threshold_optimization.csv"))
+            
+            if os.path.exists(features_file):
+                mlflow.log_artifact(features_file)
+            
+            # Log model
+            if tracking_url_type_store != "file":
+                mlflow.sklearn.log_model(calibrated_model, "model", registered_model_name="LightGBMFraudModel", serialization_format="cloudpickle")
+            else:
+                mlflow.sklearn.log_model(calibrated_model, "model", serialization_format="cloudpickle")
         
         return metrics

@@ -1,5 +1,5 @@
 LightGBM:
-  n_estimators: 1000
+  n_estimators: [100, 200, 300]
   learning_rate: [0.01, 0.05, 0.1]
   num_leaves: [31, 63, 127]
   max_depth: [-1, 7, 10]
@@ -7,3 +7,7 @@ LightGBM:
   subsample: [0.8, 1.0]
   colsample_bytree: [0.8, 1.0]
   n_iter_search: 3
+
+FeatureSelection:
+  enabled: true
+  top_n_features: 50

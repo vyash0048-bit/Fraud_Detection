@@ -30,8 +30,28 @@ class ModelTrainer:
         scale_pos_weight = num_neg / num_pos
         logging.info(f"Calculated scale_pos_weight: {scale_pos_weight:.2f}")
 
+        # Feature Selection Phase
+        if getattr(self.config, 'feature_selection_enabled', False):
+            top_n = getattr(self.config, 'top_n_features', 50)
+            logging.info(f"Feature Selection Enabled: Training baseline to extract top {top_n} features.")
+            import json
+            baseline = LGBMClassifier(n_estimators=100, scale_pos_weight=scale_pos_weight, random_state=42, n_jobs=-1, verbosity=-1)
+            baseline.fit(X_train, y_train)
+            
+            feat_imp = pd.DataFrame({'feature': baseline.feature_name_, 'importance': baseline.feature_importances_})
+            feat_imp = feat_imp.sort_values(by='importance', ascending=False)
+            top_features = feat_imp.head(top_n)['feature'].tolist()
+            
+            X_train = X_train[top_features]
+            X_val = X_val[top_features]
+            logging.info(f"Selected {len(top_features)} features.")
+            
+            with open(os.path.join(self.config.root_dir, "selected_features.json"), "w") as f:
+                json.dump(top_features, f, indent=4)
+
         # LightGBM parameter grid
         param_grid = {
+            'n_estimators': self.config.n_estimators,
             'learning_rate': self.config.learning_rate,
             'num_leaves': self.config.num_leaves,
             'max_depth': self.config.max_depth,
@@ -42,7 +62,6 @@ class ModelTrainer:
         
         # Initialize base model
         lgbm = LGBMClassifier(
-            n_estimators=self.config.n_estimators,
             scale_pos_weight=scale_pos_weight,
             objective='binary',
             metric='auc',

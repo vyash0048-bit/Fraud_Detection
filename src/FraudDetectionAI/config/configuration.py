@@ -69,13 +69,16 @@ class ConfigurationManager:
             min_child_samples=params.min_child_samples,
             subsample=params.subsample,
             colsample_bytree=params.colsample_bytree,
-            n_iter_search=params.n_iter_search
+            n_iter_search=params.n_iter_search,
+            feature_selection_enabled=self.params.FeatureSelection.enabled,
+            top_n_features=self.params.FeatureSelection.top_n_features
         )
 
         return model_trainer_config
 
     def get_model_evaluation_config(self) -> ModelEvaluationConfig:
         config = self.config.model_evaluation
+        params = self.params
 
         create_directories([config.root_dir])
 
@@ -84,7 +87,9 @@ class ConfigurationManager:
             test_data_path=Path(config.test_data_path),
             model_path=Path(config.model_path),
             calibrated_model_path=Path(config.calibrated_model_path),
-            metric_file_name=Path(config.metric_file_name)
+            metric_file_name=Path(config.metric_file_name),
+            mlflow_uri=config.mlflow_uri,
+            all_params=params
         )
 
         return model_evaluation_config

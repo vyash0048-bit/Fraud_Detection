@@ -27,4 +27,5 @@ model_evaluation:
   model_path: artifacts/model_trainer/model.joblib
   calibrated_model_path: artifacts/model_trainer/calibrated_model.joblib
   metric_file_name: artifacts/model_evaluation/metrics.json
+  mlflow_uri: ""
 

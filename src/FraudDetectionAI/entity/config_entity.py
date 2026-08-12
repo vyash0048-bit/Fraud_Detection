@@ -32,6 +32,8 @@ class ModelTrainerConfig:
     subsample: list
     colsample_bytree: list
     n_iter_search: int
+    feature_selection_enabled: bool
+    top_n_features: int
 
 @dataclass(frozen=True)
 class ModelEvaluationConfig:
@@ -40,3 +42,5 @@ class ModelEvaluationConfig:
     model_path: Path
     calibrated_model_path: Path
     metric_file_name: Path
+    mlflow_uri: str
+    all_params: dict

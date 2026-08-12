@@ -42,6 +42,7 @@ stages:
     outs:
     - artifacts/model_trainer/model.joblib
     - artifacts/model_trainer/calibrated_model.joblib
+    - artifacts/model_trainer/selected_features.json
 
   model_evaluation:
     cmd: python src/FraudDetectionAI/pipeline/stage_04_model_evaluation.py
