@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraud Detection Sentinel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="app-header">
+        <div class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <h1>Sentinel API Dashboard</h1>
+        </div>
+        <div class="status-indicator">
+            <span class="dot live"></span> System Operational
+        </div>
+    </header>
+
+    <main class="dashboard-grid">
+        <!-- Input Section -->
+        <section class="panel input-panel">
+            <div class="panel-header">
+                <h2>Transaction Input</h2>
+                <p>Simulate a transaction to evaluate fraud risk.</p>
+            </div>
+            
+            <form id="scoring-form">
+                <div class="form-group">
+                    <label for="tx_id">Transaction ID (Optional)</label>
+                    <input type="text" id="tx_id" placeholder="txn_auto_generated">
+                </div>
+                
+                <div class="form-group">
+                    <label for="features_json">Raw Feature Payload (JSON)</label>
+                    <textarea id="features_json" rows="12">
+{
+  "TransactionAmt": 150.50,
+  "card1": 1000,
+  "card2": 111,
+  "ProductCD": 1,
+  "is_guest": 0,
+  "device_type": 2
+}</textarea>
+                    <span class="helper-text">Ensure feature names match the model training schema exactly.</span>
+                </div>
+                
+                <button type="submit" class="primary-btn" id="submit-btn">
+                    <span class="btn-text">Run Risk Analysis</span>
+                    <span class="loader" style="display: none;"></span>
+                </button>
+            </form>
+        </section>
+
+        <!-- Results Section -->
+        <section class="panel result-panel">
+            <div class="panel-header">
+                <h2>Evaluation Result</h2>
+                <p>Real-time machine learning inference.</p>
+            </div>
+            
+            <div class="results-container empty" id="results-container">
+                <div class="empty-state">
+                    <p>Awaiting transaction payload...</p>
+                </div>
+                
+                <div class="scoring-card" style="display: none;">
+                    <div class="score-header">
+                        <h3>Risk Score</h3>
+                        <div class="badge" id="decision-badge">PENDING</div>
+                    </div>
+                    
+                    <div class="score-display">
+                        <div class="score-number" id="risk-score">--</div>
+                        <div class="score-label">out of 100</div>
+                    </div>
+                    
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <span class="metric-label">Fraud Probability</span>
+                            <span class="metric-value" id="fraud-prob">--%</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Risk Level</span>
+                            <span class="metric-value" id="risk-level">--</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Transaction ID</span>
+                            <span class="metric-value" id="result-tx-id" style="font-family: monospace; font-size: 0.85rem;">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
