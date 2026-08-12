@@ -85,6 +85,10 @@ jobs:
               git pull origin master
             fi
             
+            # Clean up any old standalone containers before using compose
+            docker stop fraud-api || true
+            docker rm fraud-api || true
+            
             # Rebuild and restart the Docker containers using compose
             docker compose down || true
             docker compose up -d --build
