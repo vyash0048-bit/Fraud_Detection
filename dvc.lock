@@ -5,8 +5,8 @@ stages:
     deps:
     - path: config/config.yaml
       hash: md5
-      md5: 1cb3607f2c6afd6f592f998bfb4e63e2
-      size: 1173
+      md5: c5e540dc8b9f4427a91820c5df1d2702
+      size: 1312
     - path: src/FraudDetectionAI/components/data_ingestion.py
       hash: md5
       md5: 4c406f0a0faa81d7f3ddb9adf56390d8
@@ -31,12 +31,12 @@ stages:
       nfiles: 5
     - path: config/config.yaml
       hash: md5
-      md5: 1e9ce6d9784800140af6a1bf5071afc7
-      size: 1295
+      md5: c5e540dc8b9f4427a91820c5df1d2702
+      size: 1312
     - path: src/FraudDetectionAI/components/data_preprocessing.py
       hash: md5
-      md5: f7220003ddcff5cad276547d70662619
-      size: 11250
+      md5: 0814a37ec071d7dadafefa4317df219d
+      size: 14971
     - path: src/FraudDetectionAI/pipeline/stage_02_data_preprocessing.py
       hash: md5
       md5: 8765a06033b3c66cd4e74ec27aa7ee53
@@ -44,35 +44,35 @@ stages:
     outs:
     - path: artifacts/data_preprocessing/test_preprocessed.csv
       hash: md5
-      md5: 3c5c78a5839cbed97684265d1416b579
-      size: 152404814
+      md5: ac406ee84749629d0d108771e183e98c
+      size: 1057375579
     - path: artifacts/data_preprocessing/train_preprocessed.csv
       hash: md5
-      md5: 5eb9bdac77d3630e927a54f5c9617095
-      size: 138182232
+      md5: fd6de298504cd3ac76bea3b2fc26fa09
+      size: 980068462
     - path: artifacts/data_preprocessing/val_preprocessed.csv
       hash: md5
-      md5: dd4100681b0c5894fcf887ca631ea479
-      size: 35476307
+      md5: 788c358b65127696f70ec69839fd6e98
+      size: 246526641
   model_trainer:
     cmd: python src/FraudDetectionAI/pipeline/stage_03_model_trainer.py
     deps:
     - path: artifacts/data_preprocessing/train_preprocessed.csv
       hash: md5
-      md5: 5eb9bdac77d3630e927a54f5c9617095
-      size: 138182232
+      md5: fd6de298504cd3ac76bea3b2fc26fa09
+      size: 980068462
     - path: artifacts/data_preprocessing/val_preprocessed.csv
       hash: md5
-      md5: dd4100681b0c5894fcf887ca631ea479
-      size: 35476307
+      md5: 788c358b65127696f70ec69839fd6e98
+      size: 246526641
     - path: config/config.yaml
       hash: md5
       md5: c5e540dc8b9f4427a91820c5df1d2702
       size: 1312
     - path: src/FraudDetectionAI/components/model_trainer.py
       hash: md5
-      md5: 4867d0da91a54d4c8230984a293245f8
-      size: 5103
+      md5: f57797901e7761e892f685d7279b2c69
+      size: 5113
     - path: src/FraudDetectionAI/pipeline/stage_03_model_trainer.py
       hash: md5
       md5: 1c72f3a8704cf303ab3e2f0dba331be4
@@ -80,6 +80,7 @@ stages:
     params:
       params.yaml:
         LightGBM.colsample_bytree:
+        - 0.6
         - 0.8
         - 1.0
         LightGBM.learning_rate:
@@ -88,17 +89,17 @@ stages:
         - 0.1
         LightGBM.max_depth:
         - -1
-        - 7
         - 10
+        - 15
         LightGBM.min_child_samples:
         - 20
         - 50
         - 100
         LightGBM.n_estimators:
-        - 100
-        - 200
         - 300
-        LightGBM.n_iter_search: 3
+        - 500
+        - 1000
+        LightGBM.n_iter_search: 10
         LightGBM.num_leaves:
         - 31
         - 63
@@ -109,31 +110,31 @@ stages:
     outs:
     - path: artifacts/model_trainer/calibrated_model.joblib
       hash: md5
-      md5: 54a88dc98ca91e571fdb11e0df2bcc10
-      size: 1086622
+      md5: 761aebc85d82aecea377945f074bd331
+      size: 1205254
     - path: artifacts/model_trainer/model.joblib
       hash: md5
-      md5: 53c698653cf2e5f70b14768b85b66716
-      size: 1079716
+      md5: b26efaa1b86988124908e4e07857c0cf
+      size: 1181428
     - path: artifacts/model_trainer/selected_features.json
       hash: md5
-      md5: f47191812b477eb9482e775bb0efee8a
-      size: 753
+      md5: 6fa9bd4898b1fd453296394fe1797732
+      size: 2438
   model_evaluation:
     cmd: python src/FraudDetectionAI/pipeline/stage_04_model_evaluation.py
     deps:
     - path: artifacts/data_preprocessing/val_preprocessed.csv
       hash: md5
-      md5: dd4100681b0c5894fcf887ca631ea479
-      size: 35476307
+      md5: 788c358b65127696f70ec69839fd6e98
+      size: 246526641
     - path: artifacts/model_trainer/calibrated_model.joblib
       hash: md5
-      md5: 54a88dc98ca91e571fdb11e0df2bcc10
-      size: 1086622
+      md5: 761aebc85d82aecea377945f074bd331
+      size: 1205254
     - path: artifacts/model_trainer/model.joblib
       hash: md5
-      md5: 53c698653cf2e5f70b14768b85b66716
-      size: 1079716
+      md5: b26efaa1b86988124908e4e07857c0cf
+      size: 1181428
     - path: config/config.yaml
       hash: md5
       md5: c5e540dc8b9f4427a91820c5df1d2702
@@ -144,19 +145,19 @@ stages:
       size: 11617
     - path: src/FraudDetectionAI/pipeline/stage_04_model_evaluation.py
       hash: md5
-      md5: ce675b0c7ace329528e8aca748c79c75
-      size: 875
+      md5: 33118d0278b72537685344a2496ef60b
+      size: 928
     outs:
     - path: artifacts/model_evaluation/metrics.json
       hash: md5
-      md5: 68ce12ed2727f0ca01323a2b695bd096
-      size: 611
+      md5: 7f419e18da8fcc47e6748f5bad1ed7e3
+      size: 629
     - path: artifacts/model_evaluation/plots
       hash: md5
-      md5: a9076ca14c11393e8add0e1d36215603.dir
-      size: 269840
+      md5: 604acad34bd09def073c135b23872655.dir
+      size: 284318
       nfiles: 5
     - path: artifacts/model_evaluation/threshold_optimization.csv
       hash: md5
-      md5: 59957df4a7565dfbe484be031a4c2d72
-      size: 13182
+      md5: 0902fd26b9c29b7e9a73c6571e431164
+      size: 13151

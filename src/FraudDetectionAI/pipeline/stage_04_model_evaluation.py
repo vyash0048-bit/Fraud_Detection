@@ -1,3 +1,6 @@
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
+
 from FraudDetectionAI.config.configuration import ConfigurationManager
 from FraudDetectionAI.components.model_evaluation import ModelEvaluation
 from FraudDetectionAI.logger import logging

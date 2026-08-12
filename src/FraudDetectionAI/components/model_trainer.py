@@ -75,7 +75,7 @@ class ModelTrainer:
             estimator=lgbm,
             param_distributions=param_grid,
             n_iter=self.config.n_iter_search,
-            scoring='roc_auc',
+            scoring='average_precision',
             cv=3,
             verbose=2,
             random_state=42,

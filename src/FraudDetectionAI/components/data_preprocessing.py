@@ -50,14 +50,19 @@ class DataPreprocessing:
         logging.info(f'Memory usage after optimization is: {end_mem:.2f} MB')
         logging.info(f'Decreased by {100 * (start_mem - end_mem) / start_mem:.1f}%')
         
-        return df
+        return df.copy()
 
     def feature_engineering(self, df):
-        logging.info("Performing feature engineering...")
+        logging.info("Performing advanced feature engineering...")
         df = df.copy()
         
+        # 1. Missing Value Counts
+        df['Nan_Count'] = df.isnull().sum(axis=1)
+        
+        # 2. Transaction Amount Features
         if 'TransactionAmt' in df.columns:
             df['TransactionAmt_Log'] = np.log1p(df['TransactionAmt'])
+            df['TransactionAmt_Decimal'] = df['TransactionAmt'] - np.floor(df['TransactionAmt'])
             
             # Entity: Card (using card1 as proxy)
             if 'card1' in df.columns:
@@ -76,14 +81,58 @@ class DataPreprocessing:
                 df['Card_Amt_Mean_Hist'] = df.groupby('card1')['TransactionAmt'] \
                                              .transform(lambda x: x.shift(1).expanding().mean()).fillna(df['TransactionAmt'].mean())
                 
+                # Historical rolling std amount per card
+                df['Card_Amt_Std_Hist'] = df.groupby('card1')['TransactionAmt'] \
+                                            .transform(lambda x: x.shift(1).expanding().std()).fillna(0)
+                                            
                 df['Amt_vs_Hist_Mean'] = df['TransactionAmt'] / (df['Card_Amt_Mean_Hist'] + 1e-5)
+                df['Amt_vs_Hist_Std'] = (df['TransactionAmt'] - df['Card_Amt_Mean_Hist']) / (df['Card_Amt_Std_Hist'] + 1e-5)
                 
-        # Email features
+        # 3. Email features
         if 'P_emaildomain' in df.columns:
             free_email_domains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'anonymous.com']
             df['Is_Free_Email'] = df['P_emaildomain'].isin(free_email_domains).astype(np.int8)
             
-        return df
+        if 'P_emaildomain' in df.columns and 'R_emaildomain' in df.columns:
+            df['Email_Domain_Match'] = (df['P_emaildomain'] == df['R_emaildomain']).astype(np.int8)
+            
+        # 4. Time features (Is_Weekend relies on DayOfWeek which is calculated later, so we will calculate DayOfWeek here instead)
+        if 'TransactionDT' in df.columns:
+            day = df['TransactionDT'] // (24 * 60 * 60)
+            day_of_week = day % 7
+            df['Is_Weekend'] = (day_of_week >= 5).astype(np.int8)
+
+        # 5. Magic Feature: UID (Client identifier) from Kaggle 1st place solution
+        if 'card1' in df.columns and 'addr1' in df.columns and 'D1' in df.columns:
+            if 'Day' not in df.columns and 'TransactionDT' in df.columns:
+                day = df['TransactionDT'] // (24 * 60 * 60)
+            else:
+                day = df.get('Day', 0)
+                
+            # Create UID
+            df['uid'] = df['card1'].astype(str) + '_' + df['addr1'].astype(str) + '_' + np.floor(day - df['D1']).astype(str)
+            
+            # Global aggregations within the dataset (similar to the Kaggle notebook)
+            agg_cols_mean_std = ['TransactionAmt','D4','D9','D10','D15']
+            for col in agg_cols_mean_std:
+                if col in df.columns:
+                    df[f'UID_{col}_mean'] = df.groupby('uid')[col].transform('mean')
+                    df[f'UID_{col}_std'] = df.groupby('uid')[col].transform('std')
+            
+            agg_cols_mean = [f'C{x}' for x in range(1,15) if x!=3] + [f'M{x}' for x in range(1,10)]
+            for col in agg_cols_mean:
+                if col in df.columns and pd.api.types.is_numeric_dtype(df[col]):
+                    df[f'UID_{col}_mean'] = df.groupby('uid')[col].transform('mean')
+                    
+            agg_cols_nunique = ['P_emaildomain','dist1','id_02','TransactionAmt_Decimal', 'C13','V314', 'V127','V136','V309','V307','V320']
+            for col in agg_cols_nunique:
+                if col in df.columns:
+                    df[f'UID_{col}_nunique'] = df.groupby('uid')[col].transform('nunique')
+                    
+            if 'C14' in df.columns:
+                df['UID_C14_std'] = df.groupby('uid')['C14'].transform('std')
+            
+        return df.copy()
 
     def initiate_data_preprocessing(self):
         logging.info("Starting data preprocessing")
@@ -96,6 +145,7 @@ class DataPreprocessing:
             train = pd.merge(train_transaction, train_identity, on='TransactionID', how='left')
             del train_transaction, train_identity
             gc.collect()
+            train = self.reduce_mem_usage(train)
             
             # Load and merge test data
             logging.info("Reading test data...")
@@ -105,8 +155,9 @@ class DataPreprocessing:
             del test_transaction, test_identity
             
             # Fix famous IEEE-CIS dataset quirk: test identity columns use '-' instead of '_'
-            test.columns = test.columns.str.replace('-', '_')
+            test.columns = test.columns.str.replace('-', '_', regex=False)
             gc.collect()
+            test = self.reduce_mem_usage(test)
 
             # 1. Datetime/time variables
             logging.info("Engineering Datetime variables...")
@@ -117,15 +168,30 @@ class DataPreprocessing:
                     df['Hour'] = (df['TransactionDT'] // (60 * 60)) % 24
                     df['DayOfWeek'] = df['Day'] % 7
             
+            train = train.copy()
+            test = test.copy()
+            
             # 2. Duplicate records
             logging.info("Removing duplicate records...")
             initial_len = len(train)
             train = train.drop_duplicates()
             logging.info(f"Dropped {initial_len - len(train)} duplicate records from train data.")
             
-            # Feature Engineering
-            train = self.feature_engineering(train)
-            test = self.feature_engineering(test)
+            # Feature Engineering on Combined Data (Kaggle Magic)
+            logging.info("Combining train and test for global UID aggregations...")
+            train['is_test_data_flag'] = False
+            test['is_test_data_flag'] = True
+            
+            combined = pd.concat([train, test], ignore_index=True)
+            combined = self.feature_engineering(combined)
+            
+            train = combined[combined['is_test_data_flag'] == False].copy()
+            test = combined[combined['is_test_data_flag'] == True].copy()
+            
+            train.drop(columns=['is_test_data_flag'], inplace=True)
+            test.drop(columns=['is_test_data_flag'], inplace=True)
+            del combined
+            gc.collect()
             
             # 3. Train/validation splitting (Time-based to prevent leakage)
             logging.info("Performing Time-based Train/Validation split...")
