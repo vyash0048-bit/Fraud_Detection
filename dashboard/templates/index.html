@@ -3,58 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentinel | Fraud Detection</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=3.0">
+    <title>Sentinel | Advanced Fraud Detection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=4.0">
 </head>
 <body>
-    <div class="noise-overlay"></div>
-    
-    <header class="app-header fade-in">
-        <div class="logo">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            <h1>Sentinel</h1>
-        </div>
+    <!-- App Container -->
+    <div class="app-layout">
         
-        <div class="header-metrics" id="header-metrics" style="opacity: 0;">
-            <div class="header-metric">
-                <span class="hm-label">ROC-AUC</span>
-                <span class="hm-value mono" id="kpi-auc">--</span>
-            </div>
-            <div class="header-metric">
-                <span class="hm-label">Brier Score</span>
-                <span class="hm-value mono" id="kpi-brier">--</span>
-            </div>
-            <div class="header-metric">
-                <span class="hm-label">Precision</span>
-                <span class="hm-value mono" id="kpi-precision">--</span>
-            </div>
-        </div>
-
-        <div class="status-indicator">
-            <span class="dot live"></span> System Live
-        </div>
-    </header>
-
-    <main class="dashboard-grid fade-in-up">
-        <!-- Input Section -->
-        <section class="panel input-panel">
-            <div class="panel-header">
-                <h2>Transaction Input</h2>
-                <p>Inject payload for real-time inference.</p>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <h2>Sentinel</h2>
             </div>
             
-            <form id="scoring-form">
-                <div class="form-group">
-                    <label for="tx_id">Transaction ID</label>
-                    <input type="text" id="tx_id" placeholder="Auto-generated if blank">
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    Models
+                </a>
+                <a href="#" class="nav-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    Settings
+                </a>
+            </nav>
+            
+            <div class="sidebar-status">
+                <div class="status-indicator">
+                    <span class="dot live"></span> 
+                    <span>Live Connection</span>
                 </div>
+                <p class="status-ip mono">Target: API Server</p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- Hero Banner -->
+            <header class="hero-banner fade-in" style="background-image: url('{{ url_for('static', filename='images/bg.jpg') }}');">
+                <div class="hero-overlay"></div>
+                <div class="hero-content">
+                    <h1>Real-Time Fraud Inference</h1>
+                    <p>Monitoring incoming global transactions through the LightGBM decision engine.</p>
+                </div>
+                <div class="hero-stats" id="header-metrics" style="opacity: 0;">
+                    <div class="stat-box">
+                        <span class="stat-label">ROC-AUC</span>
+                        <span class="stat-value mono" id="kpi-auc">--</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Brier Score</span>
+                        <span class="stat-value mono" id="kpi-brier">--</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Precision</span>
+                        <span class="stat-value mono" id="kpi-precision">--</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid fade-in-up">
                 
-                <div class="form-group">
-                    <label for="features_json">Feature Payload (JSON)</label>
-                    <textarea id="features_json" rows="10" spellcheck="false">
+                <!-- Left: Input Form -->
+                <section class="card input-card">
+                    <div class="card-header">
+                        <div class="icon-wrapper">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        </div>
+                        <div>
+                            <h2>Transaction Payload</h2>
+                            <p>Inject JSON data for evaluation.</p>
+                        </div>
+                    </div>
+                    
+                    <form id="scoring-form">
+                        <div class="form-group">
+                            <label for="tx_id">Transaction ID</label>
+                            <input type="text" id="tx_id" placeholder="Auto-generated if blank">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="features_json">Raw Features (JSON)</label>
+                            <textarea id="features_json" rows="8" spellcheck="false">
 {
   "TransactionAmt": 150.50,
   "card1": 1000,
@@ -63,96 +100,98 @@
   "is_guest": 0,
   "device_type": 2
 }</textarea>
-                </div>
-                
-                <button type="submit" class="primary-btn" id="submit-btn">
-                    <span class="btn-text">Analyze Risk</span>
-                    <div class="scanning-loader" style="display: none;">
-                        <div class="scanner-line"></div>
-                        <span>Scanning...</span>
-                    </div>
-                </button>
-            </form>
-        </section>
+                        </div>
+                        
+                        <button type="submit" class="action-btn" id="submit-btn">
+                            <span class="btn-text">Execute Analysis</span>
+                            <div class="loader" style="display: none;"></div>
+                        </button>
+                    </form>
+                </section>
 
-        <!-- Results Section -->
-        <section class="panel result-panel">
-            <div class="panel-header">
-                <h2>Inference Result</h2>
-                <p>Machine learning evaluation metrics.</p>
-            </div>
-            
-            <div class="results-container empty" id="results-container">
-                <div class="empty-state">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <p>Awaiting transaction data</p>
-                </div>
+                <!-- Right: Result -->
+                <section class="card result-card">
+                    <div class="card-header">
+                        <div class="icon-wrapper accent">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        </div>
+                        <div>
+                            <h2>Inference Result</h2>
+                            <p>AI-driven risk assessment.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="results-container empty" id="results-container">
+                        <!-- Empty State -->
+                        <div class="empty-state">
+                            <div class="pulse-ring"></div>
+                            <p>Awaiting Payload</p>
+                        </div>
+                        
+                        <!-- Populated State -->
+                        <div class="scoring-card" style="display: none;">
+                            <div class="score-top">
+                                <span class="badge" id="decision-badge">PENDING</span>
+                                <span class="tx-id-display mono" id="result-tx-id">--</span>
+                            </div>
+                            
+                            <div class="gauge-wrapper">
+                                <svg class="circular-chart" viewBox="0 0 36 36">
+                                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <path class="circle" id="score-circle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                </svg>
+                                <div class="gauge-text">
+                                    <div class="score-num mono" id="risk-score">0</div>
+                                    <div class="score-label">Risk Score</div>
+                                </div>
+                            </div>
+                            
+                            <div class="metrics-panel">
+                                <div class="m-row">
+                                    <span>Probability</span>
+                                    <strong class="mono" id="fraud-prob">0.00%</strong>
+                                </div>
+                                <div class="m-row">
+                                    <span>Risk Tier</span>
+                                    <strong id="risk-level">--</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
                 
-                <div class="scoring-card" style="display: none;">
-                    <div class="score-header">
-                        <span class="badge" id="decision-badge">PENDING</span>
-                        <span class="tx-id-display" id="result-tx-id">--</span>
-                    </div>
-                    
-                    <div class="gauge-container">
-                        <svg class="circular-chart" viewBox="0 0 36 36">
-                            <path class="circle-bg"
-                                d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                            />
-                            <path class="circle" id="score-circle"
-                                stroke-dasharray="0, 100"
-                                d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                            />
-                        </svg>
-                        <div class="gauge-content">
-                            <div class="score-number" id="risk-score">0</div>
-                            <div class="score-label">Risk Score</div>
+                <!-- Bottom: Logs -->
+                <section class="card log-card full-width">
+                    <div class="card-header">
+                        <div class="icon-wrapper plain">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                        </div>
+                        <div>
+                            <h2>Recent Activity</h2>
+                            <p>History of evaluated transactions.</p>
                         </div>
                     </div>
                     
-                    <div class="metrics-list">
-                        <div class="metric-row">
-                            <span class="metric-label">Probability</span>
-                            <span class="metric-value mono" id="fraud-prob">0.00%</span>
-                        </div>
-                        <div class="metric-row">
-                            <span class="metric-label">Tier</span>
-                            <span class="metric-value" id="risk-level">--</span>
-                        </div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Amount</th>
+                                    <th>Probability</th>
+                                    <th>Risk Score</th>
+                                    <th>Decision</th>
+                                </tr>
+                            </thead>
+                            <tbody id="log-body">
+                            </tbody>
+                        </table>
                     </div>
-                </div>
+                </section>
+
             </div>
-        </section>
-        
-        <!-- Log Section -->
-        <section class="panel log-panel" style="grid-column: 1 / -1; margin-top: 2rem;">
-            <div class="panel-header" style="margin-bottom: 1.5rem;">
-                <h2>Transaction History</h2>
-                <p>Recent API inference calls.</p>
-            </div>
-            
-            <div class="table-container">
-                <table class="log-table">
-                    <thead>
-                        <tr>
-                            <th>Transaction ID</th>
-                            <th>Amount</th>
-                            <th>Probability</th>
-                            <th>Risk Score</th>
-                            <th>Decision</th>
-                        </tr>
-                    </thead>
-                    <tbody id="log-body">
-                        <!-- Rows injected by JS -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </main>
+        </main>
+    </div>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
