@@ -301,6 +301,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     expl.innerHTML = `Insufficient feature data to generate insight.`;
                 }
                 
+                // --- Add to Fraud Alerts Table ---
+                if (score > 30) {
+                    mockAlerts.unshift({
+                        id: txId,
+                        time: 'Just now',
+                        cust: 'CUST-' + Math.floor(Math.random() * 9000 + 1000),
+                        amt: parseFloat(features['TransactionAmt'] || 0.0),
+                        score: score,
+                        level: tier
+                    });
+                    
+                    const activeTab = document.querySelector('.table-tabs .active');
+                    if (activeTab && typeof renderAlerts === 'function') {
+                        renderAlerts(activeTab.textContent);
+                    }
+                }
+                
             } catch (err) {
                 alert('Error parsing JSON or fetching data: ' + err.message);
             } finally {
