@@ -1,18 +1,25 @@
 <div align="center">
-  <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnlyMTlsYjQzMWwyaHlybHVnMnBocW9tOHZtcTVxeGpsZmdxcHUxaCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Yq5yq5W28FvP1EehQn/giphy.webp" alt="Radar GIF" width="150" style="border-radius:50%">
+  <img src="assets/hero_banner.jpg" alt="Sentinel Hero Banner" width="100%" style="border-radius:16px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+  
+  <br>
 
-  # 🛡️ Real-Time Fraud Detection Engine
+  <!-- Animated Radar Graphic -->
+  <img src="https://media.giphy.com/media/l41lWfcNbLXGQ8sU0/giphy.gif" alt="Radar GIF" width="100" style="border-radius:50%; box-shadow: 0 0 25px rgba(16,185,129,0.3); border: 2px solid #10B981;">
 
+  <h1 align="center">🛡️ Sentinel | Real-Time Fraud Detection Engine</h1>
+
+  <!-- Animated Typing SVG -->
   [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=10B981&center=true&vCenter=true&width=435&lines=Detecting+Fraud+in+Real-Time...;Kaggle+1st+Place+Magic+Features;LightGBM+%7C+FastAPI+%7C+DVC+%7C+MLflow)](https://git.io/typing-svg)
   
   [![Live Demo](https://img.shields.io/badge/🔴_Live_Demo-Access_Dashboard-FF4136?style=for-the-badge&logo=appveyor)](https://tinyurl.com/38rtjatu)
+  [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
 </div>
 
 <br>
 
 ## 🌐 Live Dashboard
-Experience the real-time scoring engine via our live interactive dashboard:
+Experience the real-time scoring engine via our live interactive dashboard. The dashboard features micro-animations, real-time gauges, and dynamic metrics updates.
 👉 **[Access the Live Demo Here](https://tinyurl.com/38rtjatu)**
 
 ---
@@ -24,21 +31,23 @@ This project is a complete end-to-end Machine Learning pipeline that identifies 
 - **Real-Time Scoring API**: Ultra-fast predictions served via a containerized FastAPI backend.
 - **Kaggle Magic Features**: Time-series grouping and frequency encoding across unique Client UIDs to link historical behavior.
 - **MLOps Pipeline**: Fully reproducible data processing, model training, and evaluation pipelines tracked with **DVC** and **MLflow**.
-- **Interactive Dashboard**: A Flask-based UI mimicking a live payment gateway investigator dashboard.
+- **Interactive Dashboard**: A highly polished Flask-based UI mimicking a live payment gateway investigator dashboard with HSL dark-mode aesthetics and fluid animations.
 
 ---
 
 ## 📈 Model Performance
 Using a heavily tuned **LightGBM** Calibrated Classifier, the model achieves massive reductions in False Positives while aggressively catching fraud.
 
-* **ROC-AUC**: `0.932`
-* **Precision (at best F1)**: `66.84%`
-* **Recall (Top 5% Risk)**: `63.73%`
+| Metric | Score | Impact |
+| :--- | :---: | :--- |
+| **ROC-AUC** | `0.932` | Top-tier distinction between fraud/legit |
+| **Precision** | `66.84%` | High confidence on flagged transactions |
+| **Recall (Top 5%)** | `63.73%` | Captures majority of fraud in high-risk bin |
 
 ---
 
 ## 🛠️ Tech Stack
-<p align="center">
+<div align="center">
   <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
   <img src="https://img.shields.io/badge/LightGBM-F37021?style=for-the-badge&logo=scikit-learn&logoColor=white" />
   <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" />
@@ -47,7 +56,7 @@ Using a heavily tuned **LightGBM** Calibrated Classifier, the model achieves mas
   <img src="https://img.shields.io/badge/MLflow-0194E2?style=for-the-badge&logo=mlflow&logoColor=white" />
   <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
   <img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white" />
-</p>
+</div>
 
 ---
 
@@ -84,9 +93,14 @@ graph LR
     D -->|Prob=0.92| C
     C -->|Thresholding Engine| C
     C -->|Decision: DECLINE| B
+    
+    style A fill:#1e1e1e,stroke:#333,stroke-width:2px,color:#fff
+    style B fill:#000000,stroke:#10B981,stroke-width:2px,color:#fff
+    style C fill:#009688,stroke:#00796B,stroke-width:2px,color:#fff
+    style D fill:#F37021,stroke:#D84315,stroke-width:2px,color:#fff
 ```
 
 ---
 <div align="center">
-  <i>Built with ❤️ for catching bad actors.</i>
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=10B981&center=true&vCenter=true&width=300&lines=Built+with+❤️+for+security.;Stopping+bad+actors." alt="Typing Footer" />
 </div>
