@@ -3,13 +3,10 @@
   
   <br>
 
-  <!-- Animated Radar Graphic -->
-  <img src="https://media.giphy.com/media/l41lWfcNbLXGQ8sU0/giphy.gif" alt="Radar GIF" width="100" style="border-radius:50%; box-shadow: 0 0 25px rgba(16,185,129,0.3); border: 2px solid #10B981;">
-
   <h1 align="center">🛡️ Sentinel | Real-Time Fraud Detection Engine</h1>
 
   <!-- Animated Typing SVG -->
-  [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=10B981&center=true&vCenter=true&width=435&lines=Detecting+Fraud+in+Real-Time...;Kaggle+1st+Place+Magic+Features;LightGBM+%7C+FastAPI+%7C+DVC+%7C+MLflow)](https://git.io/typing-svg)
+  [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=10B981&center=true&vCenter=true&width=435&lines=Detecting+Fraud+in+Real-Time...;LightGBM+%7C+FastAPI+%7C+DVC+%7C+MLflow)](https://git.io/typing-svg)
   
   [![Live Demo](https://img.shields.io/badge/🔴_Live_Demo-Access_Dashboard-FF4136?style=for-the-badge&logo=appveyor)](https://tinyurl.com/38rtjatu)
   [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
@@ -102,5 +99,5 @@ graph LR
 
 ---
 <div align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=10B981&center=true&vCenter=true&width=300&lines=Built+with+❤️+for+security.;Stopping+bad+actors." alt="Typing Footer" />
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1000&color=10B981&center=true&vCenter=true&width=350&lines=Built+with+passion+for+security.;Stopping+bad+actors+in+real-time." alt="Typing Footer" />
 </div>
