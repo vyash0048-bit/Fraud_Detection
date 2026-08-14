@@ -76,13 +76,16 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            set -e
+            
             # Clone repo if it doesn't exist, else pull latest
             if [ ! -d "Fraud_Detection" ]; then
               git clone https://github.com/vyash0048-bit/Fraud_Detection.git
               cd Fraud_Detection
             else
               cd Fraud_Detection
-              git pull origin master
+              git fetch origin master
+              git reset --hard origin/master
             fi
             
             # Clean up any old standalone containers before using compose
